@@ -3,7 +3,8 @@
 let
 
   seed = lib.maybeEnv "SEED" (throw "Undefined SEED");
-  sizeMegabytes = lib.toInt (lib.maybeEnv "SIZE" (throw "Undefined SIZE"));
+  fileSeed = lib.toInt (lib.maybeEnv "FILE_SEED" (throw "Undefined FILE_SEED"));
+  sizeMegabytes = lib.toInt (lib.maybeEnv "FILE_SIZE" (throw "Undefined FILE_SIZE"));
   compressPercentage = lib.toInt (lib.maybeEnv "COMPRESS_PERCENT" "50");
   id = builtins.getEnv "ID";
   cpus = lib.toInt (lib.maybeEnv "CPUS" "2");
@@ -29,12 +30,12 @@ let
 in runCommand "write-one-file" {
   buildInputs = [ fio ];
   seed = builtins.getEnv "SEED";
-  inherit fioJobs;
+  inherit fioJobs fileSeed;
   NIXBUILDNET_MIN_MEM = sizeMegabytes + 500;
   NIXBUILDNET_TAG_ID = id;
   NIXBUILDNET_MIN_CPU = cpus;
   NIXBUILDNET_MAX_CPU = cpus;
 } ''
   mkdir "$out"
-  fio --output-format=json --directory "$out" "$fioJobs"
+  fio --directory "$out" --randseed="$fileSeed" "$fioJobs"
 ''
