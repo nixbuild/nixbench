@@ -14,15 +14,15 @@ using the environment variables listed below, and must be run with the
 
 #### Parameters
 
-`SEED`: [Mandatory, String] Sets a seed for the derivation, used for forcing
+`DRV_SEED`: [Mandatory, String] Sets a seed for the derivation, used for forcing
 rebuild.
 
-`FILE_SEED`: [Mandatory, Integer] Specifies a random seed used for generating
-the file contents. If `FILE_SEED` and `FILE_SIZE` are the same between builds,
-the output nar hash will be the same.
+`FILE_SEED`: [Optional, Integer, default=0] Specifies a random seed used for
+generating the file contents. If `FILE_SEED` and `FILE_SIZE` are the same
+between builds, the output nar hash will be the same.
 
-`FILE_SIZE`: [Mandatory, Integer] Specifies the size of the file, in (Base 10)
-megabytes.
+`FILE_SIZE`: [Optional, Integer, default=1] Specifies the size of the file,
+in (Base 10) megabytes.
 
 `COMPRESS_PERCENT`: [Optional, Integer, default=50] Specifies the percentage of
 the file that is compressible. So if you specify 80, it is expected that the
@@ -40,7 +40,7 @@ Run 4 builds concurrently, each one creating a 10 MB output file:
 
 ```
 $ seq 1 4 | xargs -I '{}' -P0 \
-    env SEED="$RANDOM{}" FILE_SIZE=10 ID="BENCH_A" \
+    env DRV_SEED="$RANDOM{}" FILE_SIZE=10 ID="BENCH_A" \
       nix build .#write-one-file \
         --impure \
         --eval-store auto \

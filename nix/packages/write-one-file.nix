@@ -2,9 +2,9 @@
 
 let
 
-  seed = lib.maybeEnv "SEED" (throw "Undefined SEED");
-  fileSeed = lib.toInt (lib.maybeEnv "FILE_SEED" (throw "Undefined FILE_SEED"));
-  sizeMegabytes = lib.toInt (lib.maybeEnv "FILE_SIZE" (throw "Undefined FILE_SIZE"));
+  drvSeed = lib.maybeEnv "DRV_SEED" (throw "Undefined DRV_SEED");
+  fileSeed = lib.toInt (lib.maybeEnv "FILE_SEED" "0");
+  sizeMegabytes = lib.toInt (lib.maybeEnv "FILE_SIZE" "1");
   compressPercentage = lib.toInt (lib.maybeEnv "COMPRESS_PERCENT" "50");
   id = builtins.getEnv "ID";
   cpus = lib.toInt (lib.maybeEnv "CPUS" "2");
@@ -29,8 +29,7 @@ let
 
 in runCommand "write-one-file" {
   buildInputs = [ fio ];
-  seed = builtins.getEnv "SEED";
-  inherit fioJobs fileSeed;
+  inherit fioJobs drvSeed fileSeed;
   NIXBUILDNET_MIN_MEM = sizeMegabytes + 500;
   NIXBUILDNET_TAG_ID = id;
   NIXBUILDNET_MIN_CPU = cpus;
